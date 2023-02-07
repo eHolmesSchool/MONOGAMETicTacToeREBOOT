@@ -18,8 +18,8 @@ namespace MONOGAMETicTacToeREREBOOT
         private Rectangle BoardRectangle;
         bool DownLastFrame;
 
-        float MouseX;
-        float MouseY;
+        int MouseX;
+        int MouseY;
 
         public enum GameState
         {
@@ -38,7 +38,7 @@ namespace MONOGAMETicTacToeREREBOOT
             WasReleasedThisFrame,
             WasPressedThisFrame,
         }
-        MouseState currentMouseState = MouseState.Released;
+        MouseState currentMouseState;
 
         public enum Turn
         {
@@ -95,19 +95,57 @@ namespace MONOGAMETicTacToeREREBOOT
         {
             switch (currentMouseState)
             {
-                case MouseState.Released:
-                    break;
                 case MouseState.Pressed:
+                    if (Mouse.GetState().LeftButton == ButtonState.Released)
+                    {
+                        currentMouseState = MouseState.WasReleasedThisFrame;
+                    }
                     break;
-                case MouseState.WasReleasedThisFrame:
-                    currentMouseState = MouseState.Released;
+
+                case MouseState.Released:
+
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        currentMouseState = MouseState.WasPressedThisFrame;
+                    }
                     break;
-                case MouseState.WasPressedThisFrame:
-                    currentMouseState = MouseState.Pressed;
-                    break;
+
                 default:
                     break;
             }
+
+            switch (currentMouseState) // MouseState2 Electric Boogaloo
+            {
+                case MouseState.WasReleasedThisFrame:
+
+                    Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    break;
+
+                case MouseState.WasPressedThisFrame:
+
+                    MouseX = Mouse.GetState().X;
+                    MouseY = Mouse.GetState().Y;
+                    Debug.WriteLine(MouseX);
+                    Debug.WriteLine(MouseY);
+
+                    foreach(Tile aTile in GameBoardArray)
+                    {
+                        if (currentTurn == Turn.OTurn)
+                        {
+                            aTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.O);
+                        }
+                        else if (currentTurn == Turn.XTurn)
+                        {
+                            aTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.X);
+                        }
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+
 
             switch (currentGameState)
             {
@@ -145,11 +183,10 @@ namespace MONOGAMETicTacToeREREBOOT
                         {
                             foreach (Tile currentTile in GameBoardArray  )
                             {
-                                currentTile.TrySetState()
+                                currentTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.O );
                             }
                         }
                     }
-
                     break;
                 case GameState.EvaluateBoard:
                     break;
@@ -159,28 +196,17 @@ namespace MONOGAMETicTacToeREREBOOT
                     break;
             }
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed && DownLastFrame == false)
-            {
-                MouseX = Mouse.GetState().X;
-                MouseY = Mouse.GetState().Y;
-                Debug.WriteLine(MouseX);
-                Debug.WriteLine(MouseY);
 
-                if (currentTurn == Turn.OTurn)
-                {
-                    currentTurn = Turn.XTurn;
-                }
-                else
-                {
-                    currentTurn = Turn.OTurn;
-                }
 
-                DownLastFrame = true;
-            }
-            else if (Mouse.GetState().LeftButton == ButtonState.Released)
+            //Set currentMouseState to either Released or Pressed
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                DownLastFrame = false;
+                currentMouseState = MouseState.Released;
+            }else if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                currentMouseState = MouseState.Pressed;
             }
+
 
             base.Update(gameTime);
         }
@@ -205,10 +231,10 @@ namespace MONOGAMETicTacToeREREBOOT
                     }
                     else if (tile._tileState == Tile.TileState.O)
                     {
+                        Debug.WriteLine("OOOOO");
                         _spriteBatch.Draw(OhTexture, tile._rectangle, Color.White);
                     }
                 }
-                
             }
              
             _spriteBatch.End();
