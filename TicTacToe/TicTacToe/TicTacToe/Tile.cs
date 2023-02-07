@@ -20,6 +20,8 @@ namespace TicTacToe
         }
         public TileState _tileState { get; private set; }
 
+
+
         public Tile(Rectangle rectangle)
         {
             _rectangle = rectangle;
@@ -37,7 +39,7 @@ namespace TicTacToe
             _tileState = TileState.Blank;
         }
 
-        public bool TryGetState(Point point, TileState state) // an X and Y co-ordinate and the state we want the Tile to be. We will do the X or O logic in main
+        public bool TrySetState(Point point, TileState state) // an X and Y co-ordinate and the state we want the Tile to be. We will do the X or O logic in main
         {
             if (_tileState == TileState.Blank && _rectangle.Contains(point))
             {

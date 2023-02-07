@@ -47,13 +47,14 @@ namespace MONOGAMETicTacToeREREBOOT
         }
         Turn currentTurn = Turn.OTurn;
 
-        public enum RectangleState
-        {
-            BlankState,
-            XState,
-            OState
-        }
-        RectangleState currentRectangleState = RectangleState.BlankState;
+        //public enum TileState
+        //{
+        //    BlankState,
+        //    XState,
+        //    OState
+        //}
+        //TileState currentTileState = TileState.BlankState;
+
 
         Tile[,] GameBoardArray = new Tile[3, 3];
 
@@ -75,8 +76,6 @@ namespace MONOGAMETicTacToeREREBOOT
             _graphics.PreferredBackBufferWidth = BoardTexture.Width;
             _graphics.ApplyChanges();
 
-
-
             ExRectangle = ExTexture.Bounds;
             OhRectangle = OhTexture.Bounds;
             BoardRectangle = BoardTexture.Bounds;
@@ -90,6 +89,7 @@ namespace MONOGAMETicTacToeREREBOOT
             ExTexture = Content.Load<Texture2D>("X");
             BoardTexture = Content.Load<Texture2D>("TicTacToeBoard");
         }
+
 
         protected override void Update(GameTime gameTime)
         {
@@ -114,17 +114,17 @@ namespace MONOGAMETicTacToeREREBOOT
                 case GameState.Initialize:
 
                     currentMouseState = MouseState.Released;
-                    //for (int currentRow = 0; currentRow < 3; currentRow++)
-                    //{
-                    //    for (int currentCol = 0; currentCol < 3; currentCol++)
-                    //    {
-                    //        GameBoardArray[currentRow, currentCol] =
-                    //            new Rectangle(new
-                    //            ((currentCol * 50) + (currentCol * 10),
-                    //            (currentRow * 50) + (currentRow * 10)),
-                    //            new(50, 50));
-                    //    }
-                    //}
+                    for (int currentRow = 0; currentRow < 3; currentRow++)
+                    {
+                        for (int currentCol = 0; currentCol < 3; currentCol++)
+                        {
+                            GameBoardArray[currentRow, currentCol] =
+                                new Tile (new Rectangle(new
+                                ((currentCol * 50) + (currentCol * 10),
+                                (currentRow * 50) + (currentRow * 10)),
+                                new(50, 50)), Tile.TileState.Blank );
+                        }
+                    }
 
                     foreach (Tile tile in GameBoardArray)
                     {
@@ -132,18 +132,24 @@ namespace MONOGAMETicTacToeREREBOOT
                     }
                     break;
                 case GameState.SwapTurn:
-                    if (currentTurn == Turn.OTurn)
-                    {
-                        currentTurn = Turn.XTurn;
-                    } else if (currentTurn == Turn.XTurn)
-                    {
-                        currentTurn = Turn.OTurn;
-                    } else
-                    {
-                        Debug.Write("SWAPTURN ERROR");
-                    }
+                    if (currentTurn == Turn.OTurn) {currentTurn = Turn.XTurn;}
+                    else if (currentTurn == Turn.XTurn) {currentTurn = Turn.OTurn;}
+                    else { Debug.Write("SWAPTURN ERROR");}
+
+                    currentGameState = GameState.ExecuteTurn;
                     break;
                 case GameState.ExecuteTurn:
+                    if (currentMouseState == MouseState.WasPressedThisFrame)
+                    {
+                        if(currentTurn == Turn.OTurn)
+                        {
+                            foreach (Tile currentTile in GameBoardArray  )
+                            {
+                                currentTile.TrySetState()
+                            }
+                        }
+                    }
+
                     break;
                 case GameState.EvaluateBoard:
                     break;
