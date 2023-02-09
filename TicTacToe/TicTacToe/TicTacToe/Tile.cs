@@ -18,20 +18,27 @@ namespace TicTacToe
             X,
             O
         }
-        public TileState _tileState { get; private set; }
+        public TileState _tileState { get; set; }
 
+
+        public int TilePosX { get; set; }
+        public int TilePosY { get; set; }
+
+        public bool Victorious { get; set; } //Is the tile part of the winning row  bool
 
 
         public Tile(Rectangle rectangle)
         {
             _rectangle = rectangle;
             _tileState = TileState.Blank;
+            Victorious = false;
         }
 
-        public Tile(Rectangle tileBounds, TileState tileState)
+        public Tile(Rectangle rectangle, TileState tileState)
         {
-            _rectangle = tileBounds;
+            _rectangle = rectangle;
             _tileState = tileState;
+            Victorious = false;
         }
 
         public void Reset()
@@ -50,7 +57,7 @@ namespace TicTacToe
 
         public void SetState(TileState state) // an X and Y co-ordinate and the state we want the Tile to be. We will do the X or O logic in main
         {
-                _tileState = state;
+            _tileState = state;
             return;
         }
     }
