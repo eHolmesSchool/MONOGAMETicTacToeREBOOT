@@ -47,20 +47,8 @@ namespace MONOGAMETicTacToeREREBOOT
         }
         Turn currentTurn = Turn.OTurn;
 
-        //public enum TileState
-        //{
-        //    BlankState,
-        //    XState,
-        //    OState
-        //}
-        //TileState currentTileState = TileState.BlankState;
-
 
         Tile[,] GameBoardArray = new Tile[3, 3];
-
-    /// <summary>
-    /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// </summary>
 
         public Game1()
         {
@@ -118,27 +106,13 @@ namespace MONOGAMETicTacToeREREBOOT
             {
                 case MouseState.WasReleasedThisFrame:
 
-                    Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                    //Debug.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                     break;
 
                 case MouseState.WasPressedThisFrame:
 
                     MouseX = Mouse.GetState().X;
                     MouseY = Mouse.GetState().Y;
-                    Debug.WriteLine(MouseX);
-                    Debug.WriteLine(MouseY);
-
-                    foreach(Tile aTile in GameBoardArray)
-                    {
-                        if (currentTurn == Turn.OTurn)
-                        {
-                            aTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.O);
-                        }
-                        else if (currentTurn == Turn.XTurn)
-                        {
-                            aTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.X);
-                        }
-                    }
 
                     break;
 
@@ -168,6 +142,9 @@ namespace MONOGAMETicTacToeREREBOOT
                     {
                         tile.Reset();
                     }
+
+                    currentGameState = GameState.SwapTurn;
+
                     break;
                 case GameState.SwapTurn:
                     if (currentTurn == Turn.OTurn) {currentTurn = Turn.XTurn;}
@@ -175,20 +152,39 @@ namespace MONOGAMETicTacToeREREBOOT
                     else { Debug.Write("SWAPTURN ERROR");}
 
                     currentGameState = GameState.ExecuteTurn;
+
                     break;
                 case GameState.ExecuteTurn:
+
                     if (currentMouseState == MouseState.WasPressedThisFrame)
                     {
                         if(currentTurn == Turn.OTurn)
                         {
-                            foreach (Tile currentTile in GameBoardArray  )
+                            foreach (Tile currentTile in GameBoardArray )
                             {
-                                currentTile.TrySetState(new Point(MouseX, MouseY), Tile.TileState.O );
+                                if (currentTile.TrySet(new Point(MouseX, MouseY)) == true)
+                                {
+                                    currentTile.SetState(Tile.TileState.O);
+                                    currentGameState = GameState.EvaluateBoard;
+                                }
+                            }
+                        }
+                        else if (currentTurn == Turn.XTurn)
+                        {
+                            foreach (Tile currentTile in GameBoardArray)
+                            {
+                                if (currentTile.TrySet(new Point(MouseX, MouseY)) == true)
+                                {
+                                    currentTile.SetState(Tile.TileState.X);
+                                    currentGameState = GameState.EvaluateBoard;
+                                }
                             }
                         }
                     }
+
                     break;
                 case GameState.EvaluateBoard:
+                    currentGameState = GameState.SwapTurn;
                     break;
                 case GameState.GameEnd:
                     break;
@@ -231,7 +227,6 @@ namespace MONOGAMETicTacToeREREBOOT
                     }
                     else if (tile._tileState == Tile.TileState.O)
                     {
-                        Debug.WriteLine("OOOOO");
                         _spriteBatch.Draw(OhTexture, tile._rectangle, Color.White);
                     }
                 }
